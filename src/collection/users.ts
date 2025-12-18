@@ -11,7 +11,7 @@ export const createUser = async ( name: string, password: string) => {
     const db = getDB();
     const toEncriptao = await bcrypt.hash(password, 10);
     const buscar = await db.collection(TRAINER_COLLECTIONS).findOne({name: name})
-    if(!buscar) throw new Error("no se pueden crear dos trainers con el mismo nombre")
+    if(buscar) throw new Error("no se pueden crear dos trainers con el mismo nombre")
     const result = await db.collection<Trainer>(TRAINER_COLLECTIONS).insertOne({
         name,
         password: toEncriptao,

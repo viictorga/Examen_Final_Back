@@ -8,7 +8,7 @@ import {OWNED_COLLECTIONS, POKEMON_COLLECTIONS, TRAINER_COLLECTIONS} from "../ut
 export const catchPokemon = async (pokemonId: string,user: Trainer, nickname?: string) => {
   if(!user) throw new Error("No encuentro el token, put0graphql que no tiene opcion de copiarlo");
   const db = getDB();
-  nickname = nickname || ""
+
   const trainer = await db.collection(TRAINER_COLLECTIONS).findOne({ _id: new ObjectId(user._id) });
   if(!trainer) throw new Error("no hay trainer chaval");
   if(trainer.pokemons.length >= 6)throw new Error("son 6 capitaaaan, no te pases");
@@ -28,19 +28,22 @@ export const catchPokemon = async (pokemonId: string,user: Trainer, nickname?: s
 
   const a = await db.collection(OWNED_COLLECTIONS).insertOne(ownedPokemon);
   const arrayTrainer = user.pokemons
+   
   arrayTrainer?.push(idEnString);
   await db.collection(TRAINER_COLLECTIONS).updateOne({ _id: new ObjectId(user._id) },{ $set: { pokemons: arrayTrainer} });
 
-  return await db.collection(OWNED_COLLECTIONS).findOne({_id: new ObjectId(user._id)})
+ const c =await db.collection(OWNED_COLLECTIONS).findOne({_id: a.insertedId})
+ 
+ return c
 }
 
 export const liberarPokemon = async(id: string, user: Trainer)=>{
     if(!user) throw new Error("No encuentro el token, put0graphql que no tiene opcion de copiarlo");
 
     const db = getDB();
-    const pokesConObject = user.pokemons!.map((n)=> new ObjectId(n))
-
-    const pokemon = await db.collection(OWNED_COLLECTIONS).findOne({_id: {$in: pokesConObject}})
+  
+  
+    const pokemon = await db.collection(OWNED_COLLECTIONS).findOne({pokemon: {$in: user.pokemons!}})
     if(!pokemon) throw new Error("no puedes borrar el poke porque no es tuyo capitan")
     await db.collection(OWNED_COLLECTIONS).deleteOne({_id: new ObjectId(id)})
     const misNuevosPokes = user.pokemons!.filter((n)=> n !== id) // esto es un array con todos menos con el "eliminado"
