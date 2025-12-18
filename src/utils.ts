@@ -2,4 +2,6 @@
 
 
 export const dbName = "Examen"
-export const USER_COLLECTIONS = "users"
+export const TRAINER_COLLECTIONS = "trainer"
+export const POKEMON_COLLECTIONS = "pokemons"
+export const OWNED_COLLECTIONS = "owned"
